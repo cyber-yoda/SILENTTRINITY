@@ -1,33 +1,37 @@
-import logging
-import functools
-import shlex
 import asyncio
+import functools
+import logging
+import shlex
 import shutil
-from docopt import docopt, DocoptExit
-from terminaltables import SingleTable
-from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import Completer, Completion, PathCompleter
-from prompt_toolkit.patch_stdout import patch_stdout
 from prompt_toolkit.history import InMemoryHistory
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-from prompt_toolkit.formatted_text import HTML
+from docopt import docopt, DocoptExit
+from prompt_toolkit import PromptSession
 from prompt_toolkit.application import run_in_terminal
-from prompt_toolkit.styles import Style
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import Completer, Completion, PathCompleter
 from prompt_toolkit.document import Document
+from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.patch_stdout import patch_stdout
+from prompt_toolkit.styles import Style
 from silenttrinity.core.client.contexts.teamservers import TeamServers
 from silenttrinity.core.client.utils import command, register_cli_commands
 from silenttrinity.core.utils import print_bad, print_good, print_info
+from terminaltables import SingleTable
 
 example_style = Style.from_dict({
     'rprompt': 'bg:#ff0066 #ffffff',
 })
 
+
 def bottom_toolbar(ts):
     if ts.selected and ts.selected.stats.CONNECTED:
         ts = ts.selected
         terminal_width,_ = shutil.get_terminal_size()
-        info_bar1 = f"{ts.alias} - {ts.url.scheme}://{ts.url.username}@{ts.url.hostname}:{ts.url.port}"
-        info_bar2 = f"[Sessions: {len(ts.stats.SESSIONS)} Listeners: {len(ts.stats.LISTENERS)} Users: {len(ts.stats.USERS)}]"
+        info_bar1 = f"{ts.alias} - {ts.url.scheme}://{ts.url.username}"
+                    f"@{ts.url.hostname}:{ts.url.port}"
+        info_bar2 = f"[Sessions] : {len(ts.stats.SESSIONS)}"
+                    f"[Listeners] : {len(ts.stats.LISTENERS)}"
+                    f"[Users] : {len(ts.stats.USERS)}"
         ljustify_amount = terminal_width - len(info_bar2)
         return HTML(f"{info_bar1:<{ljustify_amount}}{info_bar2}")
     else:
